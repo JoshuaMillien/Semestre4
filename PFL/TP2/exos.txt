@@ -1,0 +1,50 @@
+Exo 1 :
+
+let rec tailleListe l = match l with
+| [] -> 0
+|_::q -> 1 + (tailleListe q);;
+
+let rec sommeElem l = match l with
+| [] ->0
+| t1::q -> t1 + (sommeElem q );;
+
+let moyenneListe l = float_of_int((sommeElem l)) /. float_of_int((tailleListe l ));;
+
+let f x = 2*x;;
+
+let rec applique_liste f l= match l with
+|[] ->[]
+|a::q -> (f a) ::(applique_liste f q);;
+
+let carre_list l = applique_liste (function x ->x*x) l;;
+
+let rec minimum_liste l = let min (x,y) = ((x+y) - abs(x-y))/2 in match l with
+| [e] -> e
+|a::b::q -> (minimum_liste (min (a,b) ::q));;
+
+ou 
+
+let rec min_list l= match l with
+| [] -> failwith "liste vide"
+| [a] -> a
+| a::b::q -> if (a<b) then (minimum_list a::q)
+			else (minimum_list b::q);;
+
+Exo 2 :
+
+let rec inserer l x = match l with
+|[] -> [x]
+|a::q -> if (x<a) then x::l
+		else a::(inserer q x);;
+
+let rec trier l = match l with
+| [] -> []
+| t::q -> inserer (trier q ) t;;
+
+let rec sous_liste l i j = match l with
+|[] -> []
+|a::q -> 
+
+
+
+
