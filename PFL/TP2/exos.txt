@@ -41,10 +41,18 @@ let rec trier l = match l with
 | [] -> []
 | t::q -> inserer (trier q ) t;;
 
-let rec sous_liste l i j = match l with
-|[] -> []
-|a::q -> 
 
+let sous_liste l i j = if (i>j) then failwith " j < i " else
+	if ((i>=0 || j>= 0 ) && (l = [] )) then failwith " liste vide " else
+	let rec sous_liste_bis l' i' j' = match (l',i',j') with
+		|(_,i',j') when j' = -1 -> []
+		|(a::r,i',j') when i' =0-> a::(sous_liste_bis r 0 (j'-1))
+		|(a::r,i',j') -> (sous_liste_bis r (i'-1) (j'-1)) in (sous_liste_bis l i j);;
 
-
-
+let fusion_liste l1 l2 = if (l1 = [] || l2 =[]) then failwith "liste 1 ou 2 vide " else
+	let rec fusion_bis l1' l2' = match l2' with
+	|[] -> l1'
+	|a::q -> fusion_bis (inserer l1' a) q in fusion_bis l1 l2;;
+	
+let tri_fusion l1 = if (l1 = []) then failwith "liste vide" else
+	let rec tri_bis_fusion l1' = 

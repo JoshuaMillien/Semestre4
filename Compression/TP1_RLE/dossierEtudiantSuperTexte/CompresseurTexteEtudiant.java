@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Vector;
 
+import javafx.scene.shape.Path;
+
 
 /**
  * Classe permettant de compresser des fichiers .txt
@@ -30,23 +32,16 @@ public class CompresseurTexteEtudiant {
 	 * 
 	 * @param fichier Le fichier texte à traiter.
 	 * @return Un vecteur contenant les lignes du fichier.
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	private Vector<String> lignesFromFile(File fichier){
+	private Vector<String> lignesFromFile(File fichier) throws IOException {
 		Vector<String> lignes=new Vector<String>();
-		try {
-			BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(fichier)));
-			String line;
-			while ((line = bf.readLine())!=null){
-				lignes.add(line);
-			}
+		BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(fichier)));
+		String line;
+		while((line = bf.readLine())!=null) {
+			lignes.add(line);
 		}
-		catch (IOException e){
-			e.getMessage();
-		}
-		/////// A COMPLETER (0) Environ 12 lignes.
-		
-		//////////////////////////////////////////
+		bf.close();
 		return lignes;
 	}
 
@@ -57,27 +52,17 @@ public class CompresseurTexteEtudiant {
 	 * Cette méthode doit créer et écrire dans un fichier des lignes de texte. En cas de problème le programme s'arrête.
 	 * @param lignes Les lignes à écrire dans le fichier.
 	 * @param nomFichier Le nom du fichier.
+	 * @throws IOException 
 	 */
 
-	private void fileFromLignes(Vector<String> lignes,String nomFichier){
-		/////// A COMPLETER (1) Environ 12 lignes.
-		File f = new File(nomFichier);
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(nomFichier));
-	        PrintWriter pw = new PrintWriter(bw);
-	        
-			for (int i = 0 ; i<lignes.size();i++){
-				pw.print(lignes.get(i));
-				pw.print("\n");
-				//System.out.println(lignes.get(i));
-			}
-			pw.close() ;
+	private void fileFromLignes(Vector<String> lignes,String nomFichier) throws IOException{
+		FileWriter fw = new FileWriter(nomFichier);
+		for(String line : lignes) {
+			fw.write(line);
+			fw.write("\n");
 		}
-		catch (Exception e){
-			e.getStackTrace();
-		}
-
-		//////////////////////////////////////////
+		fw.close();
+		
 	}
 
 
@@ -92,20 +77,17 @@ public class CompresseurTexteEtudiant {
 	private String encoderLigneFormatA(String ligne){
 		String ligneA="";
 		int maxSegment=26;
-		/////// A COMPLETER (2) Environ 12 lignes.
-		int i = 0;
-		while (i<ligne.length()){
-			char car = ligne.charAt(i);
-			int t =1;
-			while ((t<26) && (t+i < ligne.length())&&(car==ligne.charAt(t+i)))
+		int i=0;
+		while(i<ligne.length()) {
+			char c = ligne.charAt(i);
+			int t = 1;
+			while((t<26)&&(i+t<ligne.length())&&(c==ligne.charAt(i+t))) {
 				t++;
-			char car2 = (char)((int)'a'+t-1);
-			ligneA = ligneA + car2 + car;
-			i=i+t;
-				
+			}
+			char carl = (char)((int)'a'+t-1);
+			ligneA = ligneA + carl + c;
+			i+=t;
 		}
-		
-		//////////////////////////////////////////
 		return ligneA;
 	}
 
@@ -119,12 +101,9 @@ public class CompresseurTexteEtudiant {
 	 */
 	private  Vector<String> encoderLignesFormatA(Vector<String> lignes){
 		Vector<String> lignesA=new Vector<String>();
-		/////// A COMPLETER (3) Environ 2 lignes.
-		for (int i=0;i<lignes.size();i++){
-			lignesA.add(encoderLigneFormatA(lignes.get(i)));
+		for(String line : lignes) {
+			lignesA.add(encoderLigneFormatA(line));
 		}
-		
-		//////////////////////////////////////////
 		return lignesA;
 	}
 
@@ -132,23 +111,16 @@ public class CompresseurTexteEtudiant {
 	/**
 	 * A COMPLETER (4)
 	 * 
-	 * Méthode permettant de convertir une liste de fichiers au format A.
+	 * Méthode permettant de convertir une liste de fchiers au format A.
 	 * @param listeFichiers La liste des fichiers à traiter.
+	 * @throws IOException 
 	 */
-	private void traitementConvertA(Vector<File> listeFichiers){
-		/////// A COMPLETER (4) Environ 7 lignes.
-		File f;
-		Vector<String> lignes=null;
-		Vector<String> lignes2=null;
-
-		for (int i =0;i<listeFichiers.size();i++){
-			f = listeFichiers.get(i);
-			lignes=(lignesFromFile(f));
-			lignes2=encoderLignesFormatA(lignes);
-			
+	private void traitementConvertA(Vector<File> listeFichiers) throws IOException{
+		for(File f : listeFichiers) {
+			Vector<String> lignes = lignesFromFile(f);
+			Vector<String> lignesConvert = encoderLignesFormatA(lignes);
+			fileFromLignes(lignesConvert,f.getPath()+"a");
 		}
-		
-		//////////////////////////////////////////
 	}
 
 	/**
@@ -161,10 +133,15 @@ public class CompresseurTexteEtudiant {
 	 */
 	private String decoderLigneFormatA(String ligneA){
 		String ligne="";
-		/////// A COMPLETER (5) Environ 9 lignes.
-	
-		
-		//////////////////////////////////////////
+		int i = 0;
+		while(i<ligneA.length()) {
+			char c = ligneA.charAt(i+1);
+			int nbC = ligneA.charAt(i) - 'a' + 1;
+			for(int j=0; j<nbC; j++){
+				ligne += c;
+			}
+			i+=2;
+		}
 		return ligne;
 	}
 
@@ -191,10 +168,15 @@ public class CompresseurTexteEtudiant {
 	 * 
 	 * Méthode permettant de décoder et d'afficher les textes encodés au format A dans une liste de fchiers.
 	 * @param listeFichiers La liste des fichiers à traiter.
+	 * @throws IOException 
 	 */
-	private void traitementAfficheA(Vector<File> listeFichiers){
+	private void traitementAfficheA(Vector<File> listeFichiers) throws IOException{
 		/////// A COMPLETER (7) Environ 8 lignes.
-		
+		for(File f : listeFichiers) {
+			Vector<String> lignes = lignesFromFile(f);
+			Vector<String> lignesDecod = decoderLgnesFormatA(lignes);
+			fileFromLignes(lignesDecod,f.getPath()+"d");
+		}
 		
 		//////////////////////////////////////////
 	}
@@ -217,9 +199,23 @@ public class CompresseurTexteEtudiant {
 
 		while (true){
 			// A COMPLETER (8) Environ 15 lignes.
-		
+			 pos++;
+			 if(pos == ligne.length())
+				 return pos;
+			 if(pos - positionInitiale == 26) {
+				 return pos - positionInitiale;
+			 }
+			 if(ligne.charAt(pos)==ligne.charAt(posS)) 
+				 tailleS++;
+			 else {
+				 tailleS = 1;
+				 posS++;
+			 }
+			 if(tailleS==3) 
+				 return posS;
 			//////////////////////////////////////////
 		}
+		
 		
 	}
 
@@ -236,7 +232,23 @@ public class CompresseurTexteEtudiant {
 		String ligneB="";
 		int maxSegment=26;
 		/////// A COMPLETER (9) Environ 18 lignes.
-	
+		int i = 0, posI = 0, pos;
+		char c; 
+		while(i<ligne.length()) {
+			pos = chercheSequenceAvecLongueurAuMoins3(ligne,posI);
+			if(pos != posI) {
+				c = (char)((int) 'A' + (pos - posI) - 1);
+				ligneB += c;
+				while(posI != pos) {
+					ligne += ligne.charAt(posI);
+					posI++;
+				}
+			}
+			int tailleS = 1;
+			while((tailleS < 26)&&(pos+tailleS<ligne.length())&&(ligne.charAt(pos+tailleS)==ligne.charAt(pos))) {
+				tailleS++;
+			}
+		}
 		
 		//////////////////////////////////////////
 		return ligneB;
@@ -365,8 +377,9 @@ public class CompresseurTexteEtudiant {
 	/**
 	 * @param dossier Le dossier à traiter.
 	 * @param operation La chaîne de caractères correspondant à l'opération demandée.
+	 * @throws IOException 
 	 */
-	private void traitement(String dossier,String operation){
+	private void traitement(String dossier,String operation) throws IOException{
 		String extension="";
 		if (operation.equals("convertA")){
 			extension=".txt";
@@ -410,9 +423,9 @@ public class CompresseurTexteEtudiant {
 	 * Méthode permettant de décoder les textes encodés au format B dans une liste de fchiers.
 	 * @param listeFichiers La liste des fichiers à traiter.
 	 * @return Un vecteur contenant les vecteurs des lignes décodées pour chaque fichier.
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	public Vector<Vector<String>> traitementDecoderB(Vector<File> listeFichiers) throws FileNotFoundException{
+	public Vector<Vector<String>> traitementDecoderB(Vector<File> listeFichiers) throws IOException{
 		Vector<Vector<String>> result=new Vector<Vector<String>>();
 		for (int i=0;i<listeFichiers.size();i++){
 			File fichierSource=listeFichiers.elementAt(i);
@@ -424,22 +437,19 @@ public class CompresseurTexteEtudiant {
 	}
 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) { 
 		if (args.length!=2){
 			System.out.println("**** Mauvais nombre d'arguments : <dossier> <convertA|convertB|afficheA|afficheB> ***");
 			System.exit(1);
 		};
-		CompresseurTexteEtudiant compresseur=new CompresseurTexteEtudiant();
-		compresseur.traitement(args[0],args[1]);
-		
-		//String a = "boooonjour";
-		//System.out.println(compresseur.lignesFromFile(new File(args[0])).get(0));
-		//System.out.println(compresseur.encoderLigneFormatA(a));
-		
-		
-		Vector<String> lignes = compresseur.lignesFromFile(new File(args[0]));
-		System.out.println(compresseur.encoderLignesFormatA(lignes));
-		compresseur.fileFromLignes(lignes, "./exemplesTest.txt");
+		try {
+			CompresseurTexteEtudiant compresseur=new CompresseurTexteEtudiant();
+			//compresseur.traitement(args[0],args[1]);
+			System.out.println(compresseur.chercheSequenceAvecLongueurAuMoins3("ABCDDGYHUJIIIIKOLPMLOKUIODE", 0));
+			
+		} catch (Exception e) {
+			e.getMessage();
+		}
 	}
 
 }
