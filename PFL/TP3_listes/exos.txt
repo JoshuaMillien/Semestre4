@@ -1,0 +1,106 @@
+Exo 1 :
+
+let rec puissance x n = if (n=0) then 1 else
+	if (n<0) then failwith "erreur car n <0"
+	else x * puissance x (n-1);;
+
+let rec puissance_log b n = if (n=0) then 1
+	else if (n mod 2 =0) then puissance_log (b*b) (n/2)
+	else b * (puissance_log (b*b) (n/2));;
+	
+let s = Sys.time() in
+let x = puissance 5 100000 in
+let e = Sys.time() in e-.s;;
+
+Exo 2 :
+
+let rec n_a_un n = if (n=1) then [1] else n::(n_a_un (n-1));;
+
+let un_a_n n = 
+	let rec un_a_n_acc m acc = match m with
+		|0 ->[]
+		|m -> acc::(un_a_n_acc (m-1) (acc+1)) in un_a_n_acc n 1;;
+
+let rec tailleListe l = match l with
+| [] -> 0
+|_::q -> 1 + (tailleListe q);;
+
+let rec supprime l n = match l with
+|[] -> []
+|a::q -> if (n = 0) then l else supprime q (n-1);;
+
+let rec long_prefixe l = match l with
+|[] -> 0
+|[a] -> 1 
+|a::b::q -> if (a=b) then 1 + (long_prefixe (b::q)) else 1;;
+	
+let rec inverser l = match l with
+|[] -> []
+| a::q -> (inverser q) @ [a];;
+
+let rec long_suffixe l = long_prefixe (inverser l);;
+
+let rec appartient elem l = match l with
+|[] -> false
+|a::q -> if (a=elem) then true else (appartient elem q);;
+
+let rec nb_occ elem l = match l with
+|[] ->0
+|a::q -> if (a=elem) then 1+ (nb_occ elem q) else (nb_occ elem q);;
+
+let rec ensemble l = match l with
+|[]->[]
+|[a]->[a]
+|a::q-> if (appartient a q) then (ensemble q) else a::(ensemble q);;
+
+let regroupe l = let l2 = ensemble l in 
+	let rec regroupe_bis l' = match l' with
+		|[] -> []
+		|a::q ->(a,(nb_occ a l))::(regroupe_bis q) in regroupe_bis l2;;
+
+let rec inclus l1 l2 = match (l1,l2) with
+	|([],l2) -> true
+	|(l1,[]) -> false
+	|(a::q,b::r) -> if (a<>b) then (inclus l1 r) else
+					(inclus q r);;
+
+let est_egale l1 l2 = if ((inclus l1 l2) && (inclus l2 l1)) then true else false;;
+
+let rec subst x y l = match l with
+	|[] -> []
+	|a::q -> if (x=a) then y::(subst x y (q)) else a::(subst x y (q));;
+	
+let rec subst1 x y l = match l with
+	|[] ->[]
+	|a::q -> if (x=a) then y::(q) else a::(subst1 x y (q));;
+
+//Faire tri rapide
+
+let rec quick_sort l = 
+	let rec inferieur_a_n x l = match l with
+		|[] -> []
+		|a::q -> if (x<=a) then x::(inferieur_a_n x q) else (inferieur_a_n x q)@x
+
+
+
+// Correction du DS
+
+let intersection l1 l2 = let rec appartient l1 x = match l1 with
+	|[] -> false
+	|a::q -> if (a=x) then true else (appartient q x) in let rec inter l1' l2' = match l1' with
+		|[] -> []
+		|a::q -> if (appartient l2' a) then a::(inter q l2') else (inter q l2') in inter l1 l2;;
+
+let difference l1 l2 = let rec appartient l1 x = match l1 with
+	|[] -> false
+	|a::q -> if (a=x) then true else (appartient q x) in let rec diff l1' l2' = match l1' with
+		|[] -> []
+		|a::q -> if (appartient l2' a) then (diff q l2') else a::(diff q l2') in diff l1 l2;;
+		
+let xor l1 l2 = let difference l1 l2 = let rec appartient l1 x = match l1 with
+	|[] -> false
+	|a::q -> if (a=x) then true else (appartient q x) in let rec diff l1' l2' = match l1' with
+		|[] -> []
+		|a::q -> if (appartient l2' a) then (diff q l2') else a::(diff q l2') in diff l1 l2 in (difference l1 l2)@(difference l2 l1);;
+
+		 

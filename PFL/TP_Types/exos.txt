@@ -1,0 +1,49 @@
+Exo 1 :
+
+1. type intervalle = (float * float) ;;
+
+2. let borne_inf (intervalle: intervalle) = match intervalle with
+	|(a,_) -> a;;
+	
+	let borne_sup (intervalle: intervalle) = match intervalle with
+	|(b,_) -> b;;
+	
+3. let est_vide (intervalle : intervalle) = match intervalle with
+	|(a,b) -> if (a > b) then true else false;;
+	
+Exo 2 :
+
+type rationnel = int * int;;
+
+let somme_rat (x: rationnel) (y : rationnel) = match (x,y) with
+	|((a,b) , (c,d)) -> if (b = d) then ((a+c),(b)) else 
+	((a*d + b*c), (b*d));;
+
+let produit_rat (x: rationnel) (y : rationnel) = match (x,y) with
+	|((a,b) , (c,d)) -> ((a*c) ,(b*d));;
+	
+Exo 3 :
+
+type entier = Zero | Succ of entier;;
+
+let rec add x y = match x with
+	|Zero -> y
+	|Succ z -> Succ (add z y );;
+	
+let rec mult x y = match (x,y) with
+	|(Zero, y) -> Zero
+	|(x,Zero) -> Zero
+	|(Succ z,y) -> add ( mult z y) y;;
+	
+type liste_entiers = Vide | E of entier * liste_entiers;;
+
+let rec add_elem l = match l with
+	| Vide -> Zero
+	| E(x,q)-> add x (add_elem q);;
+
+Exo 4 :
+
+type liste = Vide | A | B;;
+
+let somme (l:liste) = match l with
+	|Vide = 
