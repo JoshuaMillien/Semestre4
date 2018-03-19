@@ -43,7 +43,25 @@ let rec add_elem l = match l with
 
 Exo 4 :
 
-type liste = Vide | A | B;;
+type ('a,'b) liste = Vide | X of 'a * ('a,'b) liste | Y of 'b * ('a,'b) liste;;
 
-let somme (l:liste) = match l with
-	|Vide = 
+let rec somme (l:(int,float) liste) = match l with
+	|Vide -> 0.
+	|X (n,r) -> float_of_int(n) +. (somme r)
+	|Y (n,r) -> n +. (somme r);;
+	
+type ('a,'b) tp = CA of 'a | CB of 'b;;
+
+let rec last_elem (l:('a,'b) liste) = match l with
+	|Vide -> failwith "liste vide"
+	|X (a,Vide) -> (CA a)
+	|Y (b,Vide) -> (CB b)
+	|X (a,r) -> (last_elem r)
+	|Y (b,r) -> (last_elem r);;
+	
+let rec inversion (l:('a,'b) liste) = match l with
+	|Vide -> Vide
+	|X (a,Vide) -> (CA a)
+	|Y (b,Vide) -> (CB b)
+	|X (a,r) -> (inversion r)
+	|Y (b,r) -> (inversion r);;
